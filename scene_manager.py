@@ -867,7 +867,9 @@ class SceneManager:
         frame_im = None
 
         logger.info('Detecting scenes...')
+        par = tqdm(total=total_frames+1)
         while not self._stop.is_set():
+            par.update(1)
             next_frame, position = frame_queue.get()
             if next_frame is None and position is None:
                 break
@@ -893,7 +895,7 @@ class SceneManager:
             if yolo1:
                 
                 person=yolo(frame_im,model)
-                print(person)
+                
                 metadata[f'id-{position.frame_num}']["No of person detected"]=person
                 
                 
@@ -922,7 +924,7 @@ class SceneManager:
         self._last_pos = video.position
         self._post_process(video.position.frame_num)
         
-        
+        par.close()
         return video.frame_number - start_frame_num
 
     def _decode_thread(
